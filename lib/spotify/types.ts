@@ -2,6 +2,8 @@
 // Core Spotify / Session Types
 // ============================================================
 
+import type { GenreClassification } from "@/lib/genre/types";
+
 export interface SpotifyTokens {
   accessToken: string;
   refreshToken: string;
@@ -47,7 +49,10 @@ export interface NormalizedTrack {
   spotifyUrl: string;
   isPlayable: boolean;
   genres: string[]; // populated after enrichTracksWithGenres(); empty array if not fetched
+  genreClassification?: GenreClassification; // populated after classifyTracks(); undefined if not run
 }
+
+export type { GenreClassification };
 
 // ============================================================
 // Grouping Strategy

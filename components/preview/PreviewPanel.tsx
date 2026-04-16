@@ -1,21 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { PlaylistPreview, GeneratedPlaylistGroup } from "@/lib/spotify/types";
+import { PlaylistPreview, GeneratedPlaylistGroup, NormalizedTrack } from "@/lib/spotify/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatNumber, formatDate } from "@/lib/utils/format";
-import { ListMusic, AlertCircle, ChevronDown, ChevronUp, Loader2, Sparkles } from "lucide-react";
+import { ListMusic, AlertCircle, ChevronDown, ChevronUp, Loader2, Sparkles, Info } from "lucide-react";
+import type { GenreClassification } from "@/lib/genre/types";
 
 interface Props {
   preview: PlaylistPreview;
+  strategy?: string;
   onCreatePlaylists: (groups: GeneratedPlaylistGroup[]) => Promise<void>;
   isCreating: boolean;
 }
 
-export function PreviewPanel({ preview, onCreatePlaylists, isCreating }: Props) {
+export function PreviewPanel({ preview, strategy, onCreatePlaylists, isCreating }: Props) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const isGenreStrategy = strategy === "genre";
 
   const toggleGroup = (id: string) => {
     setExpandedGroups((prev) => {
@@ -109,6 +112,7 @@ export function PreviewPanel({ preview, onCreatePlaylists, isCreating }: Props) 
             group={group}
             isExpanded={expandedGroups.has(group.id)}
             onToggle={() => toggleGroup(group.id)}
+            showGenreDetails={isGenreStrategy}
           />
         ))}
       </div>
@@ -120,10 +124,12 @@ function GroupCard({
   group,
   isExpanded,
   onToggle,
+  showGenreDetails,
 }: {
   group: GeneratedPlaylistGroup;
   isExpanded: boolean;
   onToggle: () => void;
+  showGenreDetails: boolean;
 }) {
   const sampleTracks = group.tracks.slice(0, 5);
 
@@ -163,26 +169,11 @@ function GroupCard({
           </p>
           <div className="space-y-2">
             {sampleTracks.map((track) => (
-              <div key={track.id} className="flex items-center gap-3">
-                {track.imageUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={track.imageUrl}
-                    alt={track.albumName}
-                    className="h-9 w-9 flex-shrink-0 rounded object-cover"
-                  />
-                )}
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-zinc-200">{track.name}</p>
-                  <p className="truncate text-xs text-zinc-500">
-                    {track.primaryArtist} · {track.albumName}
-                    {track.releaseYear ? ` · ${track.releaseYear}` : ""}
-                  </p>
-                </div>
-                <div className="ml-auto flex-shrink-0 text-xs text-zinc-600">
-                  {formatDate(track.addedAt)}
-                </div>
-              </div>
+              <TrackRow
+                key={track.id}
+                track={track}
+                showGenreDetails={showGenreDetails}
+              />
             ))}
             {group.trackCount > 5 && (
               <p className="text-xs text-zinc-600">
@@ -204,6 +195,108 @@ function GroupCard({
         </div>
       )}
     </div>
+  );
+}
+
+function TrackRow({
+  track,
+  showGenreDetails,
+}: {
+  track: NormalizedTrack;
+  showGenreDetails: boolean;
+}) {
+  const [showRationale, setShowRationale] = useState(false);
+  const gc = track.genreClassification;
+
+  return (
+    <div className="rounded-lg">
+      <div className="flex items-center gap-3">
+        {track.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={track.imageUrl}
+            alt={track.albumName}
+            className="h-9 w-9 flex-shrink-0 rounded object-cover"
+          />
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium text-zinc-200">{track.name}</p>
+          <p className="truncate text-xs text-zinc-500">
+            {track.primaryArtist} · {track.albumName}
+            {track.releaseYear ? ` · ${track.releaseYear}` : ""}
+          </p>
+        </div>
+
+        {showGenreDetails && gc ? (
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            <ConfidenceBadge confidence={gc.confidence} />
+            <SourceBadge source={gc.source} />
+            <button
+              type="button"
+              onClick={() => setShowRationale((v) => !v)}
+              className="rounded p-1 text-zinc-600 hover:text-zinc-400"
+              title="Show classification rationale"
+            >
+              <Info className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div className="ml-auto shrink-0 text-xs text-zinc-600">
+            {formatDate(track.addedAt)}
+          </div>
+        )}
+      </div>
+
+      {showGenreDetails && gc && showRationale && (
+        <div className="mt-1.5 ml-12 rounded-md border border-zinc-700/50 bg-zinc-800/50 px-3 py-2">
+          <p className="text-xs text-zinc-400">{gc.rationale}</p>
+          {gc.signals.normalizedArtistGenres.length > 0 && (
+            <p className="mt-1 text-xs text-zinc-600">
+              Artist tags: {gc.signals.normalizedArtistGenres.slice(0, 5).join(", ")}
+            </p>
+          )}
+          {gc.secondaryGenres.length > 0 && (
+            <p className="mt-1 text-xs text-zinc-600">
+              Also: {gc.secondaryGenres.join(", ")}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ConfidenceBadge({ confidence }: { confidence: number }) {
+  const pct = Math.round(confidence * 100);
+  let colorClass = "bg-green-500/15 text-green-400 border-green-500/30";
+  if (pct < 55) colorClass = "bg-red-500/15 text-red-400 border-red-500/30";
+  else if (pct < 75) colorClass = "bg-yellow-500/15 text-yellow-400 border-yellow-500/30";
+
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium ${colorClass}`}
+    >
+      {pct}%
+    </span>
+  );
+}
+
+function SourceBadge({ source }: { source: GenreClassification["source"] }) {
+  const configs = {
+    rules: { label: "Rules", color: "bg-blue-500/15 text-blue-400 border-blue-500/30" },
+    heuristics: { label: "Hints", color: "bg-purple-500/15 text-purple-400 border-purple-500/30" },
+    ai: { label: "AI", color: "bg-green-500/15 text-green-400 border-green-500/30" },
+    fallback: { label: "Guess", color: "bg-zinc-500/15 text-zinc-400 border-zinc-500/30" },
+  } as const;
+
+  const { label, color } = configs[source];
+
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-1.5 py-0.5 text-[10px] font-medium ${color}`}
+    >
+      {label}
+    </span>
   );
 }
 

@@ -678,6 +678,7 @@ export function DashboardClient({ user }: Props) {
             {preview && (
               <PreviewPanel
                 preview={preview}
+                strategy={options.strategy}
                 onCreatePlaylists={handleCreatePlaylists}
                 isCreating={phase === "creating"}
               />

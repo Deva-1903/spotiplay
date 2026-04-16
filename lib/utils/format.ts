@@ -48,7 +48,7 @@ export const STRATEGY_LABELS: Record<string, string> = {
 export const STRATEGY_DESCRIPTIONS: Record<string, string> = {
   chunk: "Split your library into equal-sized playlists",
   artist: "One playlist per artist (based on primary artist)",
-  genre: "One playlist per genre — fetches artist genres from Spotify (takes a moment)",
+  genre: "One playlist per genre — uses a hybrid classifier (rules + AI) to map tracks to 20 canonical genres",
   releaseYear: "One playlist per release year",
   decade: "One playlist per decade (1990s, 2000s, etc.)",
   likedMonth: "Grouped by the month you liked each song (YYYY-MM)",

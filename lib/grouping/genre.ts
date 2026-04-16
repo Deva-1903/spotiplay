@@ -9,9 +9,9 @@ import { overflowChunk } from "./overflow";
 const UNKNOWN_GENRE = "Other";
 
 /**
- * Group tracks by their primary artist's first genre.
- * Tracks with no genres fall into "Other".
- * Requires tracks to have been enriched via enrichTracksWithGenres().
+ * Group tracks by their classified canonical genre (from genreClassification.primaryGenre).
+ * Falls back to "Other" if no classification is present.
+ * Requires tracks to have been enriched and classified via the genre pipeline.
  */
 export function genreGroup(
   tracks: NormalizedTrack[],
@@ -22,8 +22,7 @@ export function genreGroup(
   const map = new Map<string, NormalizedTrack[]>();
 
   for (const track of tracks) {
-    // Use first genre as the primary bucket; fallback to "Other"
-    const genre = normalizeGenre(track.genres[0]) ?? UNKNOWN_GENRE;
+    const genre = track.genreClassification?.primaryGenre ?? UNKNOWN_GENRE;
     const existing = map.get(genre) ?? [];
     existing.push(track);
     map.set(genre, existing);
@@ -32,10 +31,10 @@ export function genreGroup(
   const groups: GeneratedPlaylistGroup[] = [];
   const usedTitles = new Set<string>();
 
-  // Sort alphabetically; "Other" last
+  // Sort alphabetically; "Other" and "Mixed/Uncertain" last
   const sortedGenres = Array.from(map.keys()).sort((a, b) => {
-    if (a === UNKNOWN_GENRE) return 1;
-    if (b === UNKNOWN_GENRE) return -1;
+    if (a === UNKNOWN_GENRE || a === "Mixed/Uncertain") return 1;
+    if (b === UNKNOWN_GENRE || b === "Mixed/Uncertain") return -1;
     return a.localeCompare(b);
   });
 
@@ -62,18 +61,6 @@ export function genreGroup(
   }
 
   return groups;
-}
-
-/**
- * Capitalize and clean a raw Spotify genre string.
- * e.g. "pop rock" → "Pop Rock"
- */
-function normalizeGenre(genre: string | undefined): string | null {
-  if (!genre) return null;
-  return genre
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
 }
 
 function slugify(str: string): string {
