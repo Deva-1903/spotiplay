@@ -16,7 +16,7 @@ export default async function LandingPage({ searchParams }: PageProps) {
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <div className="flex items-center gap-2">
             <Music2 className="h-6 w-6 text-green-500" />
-            <span className="text-lg font-bold text-zinc-100">SpotiPlay</span>
+            <span className="text-lg font-bold text-zinc-100">Sortify</span>
           </div>
         </div>
       </nav>
@@ -37,7 +37,7 @@ export default async function LandingPage({ searchParams }: PageProps) {
 
           <p className="mb-10 text-xl text-zinc-400">
             Connect Spotify, fetch your entire liked songs library, and split it into beautifully
-            organized playlists — by artist, decade, year, alphabetical order, or any custom rule
+            organized playlists - by artist, decade, year, alphabetical order, or any custom rule
             you define.
           </p>
 
@@ -142,7 +142,7 @@ export default async function LandingPage({ searchParams }: PageProps) {
       </section>
 
       <footer className="border-t border-zinc-800 px-6 py-6 text-center text-sm text-zinc-600">
-        SpotiPlay is not affiliated with Spotify AB. Built with Next.js.
+        Sortify is not affiliated with Spotify AB. Built with Next.js.
       </footer>
     </main>
   );

@@ -16,7 +16,13 @@ import { SpotifyUser } from "@/lib/spotify/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -26,7 +32,13 @@ import {
   STRATEGY_NEEDS_GENRES,
   formatNumber,
 } from "@/lib/utils/format";
-import { loadPresets, savePreset, deletePreset, defaultPresetName, Preset } from "@/lib/utils/presets";
+import {
+  loadPresets,
+  savePreset,
+  deletePreset,
+  defaultPresetName,
+  Preset,
+} from "@/lib/utils/presets";
 import {
   Music2,
   Download,
@@ -52,7 +64,7 @@ type Phase =
   | "idle"
   | "fetching"
   | "fetched"
-  | "enriching"  // fetching artist genres
+  | "enriching" // fetching artist genres
   | "previewing"
   | "previewed"
   | "creating"
@@ -261,15 +273,10 @@ export function DashboardClient({ user }: Props) {
   }, []);
 
   const progressPct =
-    fetchProgress.total > 0
-      ? Math.round((fetchProgress.fetched / fetchProgress.total) * 100)
-      : 0;
+    fetchProgress.total > 0 ? Math.round((fetchProgress.fetched / fetchProgress.total) * 100) : 0;
 
   const isBusy =
-    phase === "fetching" ||
-    phase === "enriching" ||
-    phase === "previewing" ||
-    phase === "creating";
+    phase === "fetching" || phase === "enriching" || phase === "previewing" || phase === "creating";
 
   // Pre-computed labels used inside the narrowed JSX branch below.
   // TypeScript narrows `phase` inside the options panel to exclude "enriching",
@@ -290,10 +297,9 @@ export function DashboardClient({ user }: Props) {
           <div className="flex items-center gap-3">
             <Music2 className="h-7 w-7 text-green-500" />
             <div>
-              <h1 className="text-2xl font-bold text-zinc-100">SpotiPlay</h1>
+              <h1 className="text-2xl font-bold text-zinc-100">Sortify</h1>
               <p className="text-sm text-zinc-400">
-                Logged in as{" "}
-                <span className="font-medium text-zinc-200">{user.displayName}</span>
+                Logged in as <span className="font-medium text-zinc-200">{user.displayName}</span>
               </p>
             </div>
           </div>
@@ -439,12 +445,9 @@ export function DashboardClient({ user }: Props) {
 
                 {/* Presets list */}
                 {showPresets && presets.length > 0 && (
-                  <div className="rounded-lg border border-zinc-800 divide-y divide-zinc-800">
+                  <div className="divide-y divide-zinc-800 rounded-lg border border-zinc-800">
                     {presets.map((p) => (
-                      <div
-                        key={p.name}
-                        className="flex items-center justify-between px-4 py-2.5"
-                      >
+                      <div key={p.name} className="flex items-center justify-between px-4 py-2.5">
                         <div>
                           <p className="text-sm font-medium text-zinc-200">{p.name}</p>
                           <p className="text-xs text-zinc-500">
@@ -502,9 +505,7 @@ export function DashboardClient({ user }: Props) {
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-zinc-500">
-                    {STRATEGY_DESCRIPTIONS[options.strategy]}
-                  </p>
+                  <p className="text-xs text-zinc-500">{STRATEGY_DESCRIPTIONS[options.strategy]}</p>
                   {STRATEGY_NEEDS_GENRES.has(options.strategy) && (
                     <p className="flex items-center gap-1.5 text-xs text-purple-400">
                       <Tag className="h-3 w-3" />
@@ -566,9 +567,7 @@ export function DashboardClient({ user }: Props) {
                           min={10}
                           max={500}
                           value={options.chunkSize}
-                          onChange={(e) =>
-                            setOption("chunkSize", parseInt(e.target.value) || 100)
-                          }
+                          onChange={(e) => setOption("chunkSize", parseInt(e.target.value) || 100)}
                         />
                       </div>
                     )}
@@ -687,46 +686,34 @@ export function DashboardClient({ user }: Props) {
         )}
 
         {/* Fetch warnings */}
-        {fetchWarnings.length > 0 &&
-          phase !== "idle" &&
-          phase !== "fetching" && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <AlertCircle className="h-4 w-4 text-yellow-500" />
-                  {fetchWarnings.length} tracks skipped during import
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="max-h-48 space-y-1 overflow-y-auto">
-                  {fetchWarnings.slice(0, 20).map((w, i) => (
-                    <p key={i} className="text-xs text-zinc-500">
-                      {w.message}
-                    </p>
-                  ))}
-                  {fetchWarnings.length > 20 && (
-                    <p className="text-xs text-zinc-600">
-                      …and {fetchWarnings.length - 20} more
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+        {fetchWarnings.length > 0 && phase !== "idle" && phase !== "fetching" && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <AlertCircle className="h-4 w-4 text-yellow-500" />
+                {fetchWarnings.length} tracks skipped during import
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="max-h-48 space-y-1 overflow-y-auto">
+                {fetchWarnings.slice(0, 20).map((w, i) => (
+                  <p key={i} className="text-xs text-zinc-500">
+                    {w.message}
+                  </p>
+                ))}
+                {fetchWarnings.length > 20 && (
+                  <p className="text-xs text-zinc-600">…and {fetchWarnings.length - 20} more</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
 }
 
-function StatCard({
-  label,
-  value,
-  sub,
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-}) {
+function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <Card>
       <CardContent className="pt-6">

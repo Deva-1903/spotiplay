@@ -4,12 +4,12 @@ import "./globals.css";
 const APP_URL = process.env.APP_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
-  title: "SpotiPlay — Spotify Liked Songs Playlist Splitter",
+  title: "Sortify — Spotify Liked Songs Playlist Splitter",
   description:
     "Split your entire Spotify liked songs library into organized playlists — by artist, genre, decade, year, alphabetical order, or custom rules.",
   metadataBase: new URL(APP_URL),
   openGraph: {
-    title: "SpotiPlay — Spotify Liked Songs Playlist Splitter",
+    title: "Sortify — Spotify Liked Songs Playlist Splitter",
     description:
       "Split your entire Spotify liked songs library into organized playlists — by artist, genre, decade, year, alphabetical order, or custom rules.",
     type: "website",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "SpotiPlay — Spotify Liked Songs Playlist Splitter",
+    title: "Sortify — Spotify Liked Songs Playlist Splitter",
     description: "Finally organize your Spotify liked songs into real playlists.",
   },
   icons: {
@@ -32,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-zinc-950 text-zinc-100">{children}</body>
+      <body className="flex min-h-full flex-col bg-zinc-950 text-zinc-100">{children}</body>
     </html>
   );
 }

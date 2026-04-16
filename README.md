@@ -1,4 +1,4 @@
-# SpotiPlay — Spotify Liked Songs Playlist Splitter
+# Sortify — Spotify Liked Songs Playlist Splitter
 
 Split your entire Spotify liked songs library into multiple organized playlists using nine different grouping strategies. Built with Next.js 16, TypeScript, Tailwind CSS, and the Spotify Web API.
 
@@ -65,6 +65,7 @@ SESSION_SECRET=your_32_char_random_secret
 ```
 
 Generate a session secret:
+
 ```bash
 openssl rand -hex 32
 ```
@@ -92,8 +93,9 @@ pnpm test:coverage # with coverage report
 ```
 
 Tests cover:
+
 - Chunk grouping
-- Decade grouping  
+- Decade grouping
 - Alphabetical grouping
 - Deduplication logic
 - Sort stability
@@ -134,13 +136,13 @@ Secrets never touch the client. The session cookie is `HttpOnly`, `SameSite=lax`
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|---|---|---|
-| `SPOTIFY_CLIENT_ID` | Yes | Your Spotify app's client ID |
-| `SPOTIFY_CLIENT_SECRET` | Yes | Your Spotify app's client secret (never exposed to browser) |
-| `SPOTIFY_REDIRECT_URI` | Yes | OAuth callback URL — must match what you set in Spotify dashboard |
-| `APP_URL` | Yes | Your app's root URL (e.g. `http://localhost:3000`) |
-| `SESSION_SECRET` | Yes | At least 32-character random string for cookie encryption |
+| Variable                | Required | Description                                                       |
+| ----------------------- | -------- | ----------------------------------------------------------------- |
+| `SPOTIFY_CLIENT_ID`     | Yes      | Your Spotify app's client ID                                      |
+| `SPOTIFY_CLIENT_SECRET` | Yes      | Your Spotify app's client secret (never exposed to browser)       |
+| `SPOTIFY_REDIRECT_URI`  | Yes      | OAuth callback URL — must match what you set in Spotify dashboard |
+| `APP_URL`               | Yes      | Your app's root URL (e.g. `http://localhost:3000`)                |
+| `SESSION_SECRET`        | Yes      | At least 32-character random string for cookie encryption         |
 
 ## Deploying to Vercel
 
@@ -157,19 +159,20 @@ gh repo create spotiplay --private --source . --push
 2. Framework preset: **Next.js** (auto-detected)
 3. Add all environment variables from the table above:
 
-| Variable | Value |
-|---|---|
-| `SPOTIFY_CLIENT_ID` | from Spotify dashboard |
-| `SPOTIFY_CLIENT_SECRET` | from Spotify dashboard |
-| `SPOTIFY_REDIRECT_URI` | `https://your-app.vercel.app/api/auth/callback` |
-| `APP_URL` | `https://your-app.vercel.app` |
-| `SESSION_SECRET` | `openssl rand -hex 32` |
+| Variable                | Value                                           |
+| ----------------------- | ----------------------------------------------- |
+| `SPOTIFY_CLIENT_ID`     | from Spotify dashboard                          |
+| `SPOTIFY_CLIENT_SECRET` | from Spotify dashboard                          |
+| `SPOTIFY_REDIRECT_URI`  | `https://your-app.vercel.app/api/auth/callback` |
+| `APP_URL`               | `https://your-app.vercel.app`                   |
+| `SESSION_SECRET`        | `openssl rand -hex 32`                          |
 
 4. Deploy
 
 ### 3. Update Spotify dashboard
 
 Add your production callback URL to **Redirect URIs** in your Spotify app settings:
+
 ```
 https://your-app.vercel.app/api/auth/callback
 ```
